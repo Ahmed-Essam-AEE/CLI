@@ -45,7 +45,7 @@ public class Parser {
     /*
         Checks if path is a valid file path under the Windows path convention
      */
-    public boolean isFilePath(String path){
+   /* public boolean isFilePath(String path){
         return Pattern.matches("[a-zA-Z]:(/[a-zA-Z][^\\s/]*)*/?", path);
     }
 
@@ -157,7 +157,7 @@ public class Parser {
 }*/
      
      
-     
+//////////////////////////////////////////////////     
 package command_line;
 
 import java.util.Arrays;
@@ -212,5 +212,7 @@ public boolean parse(String input) {
 }
  
 }
+
+/////////////////////////////////////////////////////
 
 
