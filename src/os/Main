@@ -1,0 +1,36 @@
+package command_line;
+import java.util.Scanner;
+public class Command_Line {
+
+    public static void main(String[] args) {
+        Parser parser = new Parser();
+        Terminal terminal = new Terminal();  
+        String command;
+        String[] Args;
+        String currentPath; 
+        String userInput;
+        boolean keep = true ; 
+        Scanner input = new Scanner(System.in);
+        System.out.print("input the path -> ");
+	currentPath = input.nextLine();
+        while (keep){
+            System.out.print(">");
+	    userInput = input.nextLine();
+            parser.parse(userInput) ;
+             command = parser.getCommandName();
+             Args = parser.getArgs(); 
+           /* while( parser.parse(userInput) ){
+                 command = parser.getCommandName();
+                 Args = parser.getArgs(); 
+                 System.out.println(command);
+                 System.out.println(Args);
+            }*/
+           // System.out.println(command);
+            //System.out.println(Args);
+            for (String str : Args){
+                System.out.println(str);
+            }
+        }
+    }
+    
+}
