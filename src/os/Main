@@ -16,20 +16,64 @@ public class Command_Line {
         while (keep){
             System.out.print(">");
 	    userInput = input.nextLine();
-            parser.parse(userInput) ;
-             command = parser.getCommandName();
-             Args = parser.getArgs(); 
-           /* while( parser.parse(userInput) ){
-                 command = parser.getCommandName();
-                 Args = parser.getArgs(); 
-                 System.out.println(command);
-                 System.out.println(Args);
-            }*/
-           // System.out.println(command);
-            //System.out.println(Args);
-            for (String str : Args){
-                System.out.println(str);
+            if (userInput.equals("exit")){
+                keep = false ; 
+                break ; 
             }
+            while( parser.parse(userInput) ) {
+                command = parser.getCommandName();
+                Args = parser.getArgs(); 
+                 switch(command){
+                        case "echo" :
+                            //
+                            break ; 
+                         case "pwd" :
+                            //
+                            break ; 
+                         case "cd" :
+                            //
+                            break ; 
+                         case "1s" :
+                            //
+                            break ;
+                         case "1s -r" :
+                            //
+                            break ; 
+                         case "mkdir" :
+                            //
+                            break ; 
+                         case "rmdir" :
+                            //
+                            break ; 
+                         case "touch" :
+                            //
+                            break ;
+                         case "cp" :
+                            //
+                            break ;
+                         case "cp -r" :
+                            //
+                            break ; 
+                         case "rm" :
+                            //
+                            break ;
+                         case "cat" :
+                            //
+                            break ; 
+                         case ">" :
+                            //
+                            break ;
+                         case ">>" :
+                            //
+                            break ; 
+                        case "help" :
+                            //
+                            break ; 
+                        default :
+                            break ; 
+                }
+            }
+           
         }
     }
     
