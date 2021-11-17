@@ -1,16 +1,10 @@
 package command_line;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 public class Terminal {
- Parser parser;
+Parser parser;
+File currentPath = new File(System.getProperty("user.dir"));
 ///////////////////////////////////////////
- Path path = Paths.get("c:\\");
  public void chooseCommandAction(String command, String [] args){
        switch(command){
         case "echo" :
@@ -64,49 +58,70 @@ public class Terminal {
  }
 //////////////////////////////////////////
 public String echo(String [] args) {
-   // return String.join(" ", args);
-    return ("the user enter :"+value);
+    return String.join(" ", args);
 }
 ////////////////////////////////////////////
-  private File founddir;
 public String pwd() {
-  //  return System.getProperty("user.dir");
-    String current_directory;
-         
-        current_directory = System.getProperty("user.dir");//here we need curdir for project if we go any place this function will return path
-        founddir= new File(current_directory);
-        System.out.println("Current directory:" +current_directory); 
- 
+       return currentPath.getAbsolutePath();
 }
-///////////////////////////////////////////
-public void cd(String [] args){
-    if(path=="..")
-          {
-            String pathOfUperFloder = founddir.getParent();
-            founddir=new File(pathOfUperFloder).getParentFile();
-            System.out.println(pathOfUperFloder);
-          }
-          else {
-           File file1=new File(path);//to get full path we create new file to get from it
-           founddir=file1.getAbsoluteFile();
-              System.out.println(founddir.getAbsolutePath());
-          }
-  }
+/////////////////////////////////////////////
+  public void cd(String [] args)
+  {
+      if (args.length == 0){
+           String pathofUser;
+           currentPath= new File(System.getProperty("user.home"));
+           pathofUser=(System.getProperty("user.home"));
+      }
+      else if (args.length == 1 && args[0].equals("..")){
+              currentPath = currentPath.getParentFile(); 
+      }
+      else {
+            File file1=new File(args[0]);
+            currentPath = file1.getAbsoluteFile();
+      }
+ }
 ///////////////////////////////////////////
 public String ls(String [] args) {
-          String [] contents = founddir.list();
-        
-        for (int i = 0; i < contents.length; i++)
-        {
-            System.out.println(contents[i]);
+        String [] contents = currentPath.list();
+        StringBuilder text = new StringBuilder();
+        if (args.length == 0){
+               for (int i = 0; i < contents.length; i++)
+               {
+                   if (i==0){
+                       text.append(contents[i]); 
+                   }
+                   else{
+                       text.append("\n"+contents[i]);   
+                   }
+               }
         }
+        else if (args.length == 1 && args[0].equals("-r")){
+            for (int i = contents.length-1; i>=0; i--)
+               {
+                   if (i == contents.length-1){
+                        text.append(contents[i]);
+                   }
+                   else {
+                       text.append("\n"+contents[i]);
+                   }
+               }
+        }
+    return text.toString() ; 
 }
 ////////////////////////////////////////////
 public void mkdir(String [] args) {
-        for (int i = 0; i < args.length; i++) {
-            File theDir = new File(args[i]);
+        if (args.length == 1 && args[0].charAt(1)==':' ){
+            File theDir = new File(args[0]);
             if (!theDir.exists()) {
                 theDir.mkdirs();
+            }
+        }
+        else {
+            for (int i = 0; i < args.length; i++) {
+                File theDir = new File(currentPath,args[i]);
+                if (!theDir.exists()) {
+                    theDir.mkdirs();
+                }
             }
         }
     }
@@ -115,7 +130,8 @@ public void rmdir(String [] args) {
         String dir = args[0];
         try {
             if (dir.equals("*")) {
-                File theDir = new File(System.getProperty("user.dir"));
+                File theDir = currentPath;
+               // File theDir = new File(System.getProperty("user.dir"));
                 File[] tmp = theDir.listFiles();
                 for (int i = 0; i < tmp.length; i++) {
                     File file = tmp[i];
@@ -126,7 +142,6 @@ public void rmdir(String [] args) {
                     }
                 }
             } else {
-
                 File theDir;
                 if (dir.contains(":")) {
                     theDir = new File(dir);
@@ -136,7 +151,6 @@ public void rmdir(String [] args) {
                 if (theDir.listFiles().length == 0) {
                     theDir.delete();
                 }
-
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -148,7 +162,7 @@ public void rmdir(String [] args) {
         if (args[0].contains(":")) {
             file = new File(args[0]);
         } else {
-            file = new File(System.getProperty("user.dir") + "\\" + args[0]);
+            file = new File(currentPath + "\\" + args[0]);
         }
 
         try {
@@ -168,8 +182,6 @@ public void rmdir(String [] args) {
         System.out.println("mkdir  -> make a new directory.");
         System.out.println("rmdir  -> delete a directory.");
         System.out.println("touch  -> create a file ");
-        System.out.println("cp     -> copy files from the current directory to a different directory.");
-        System.out.println("cp -r  -> copy files from the current directory to a different directory (empty or not).");
         System.out.println("rm     -> delete directories and the contents within them.");
         System.out.println("cat    -> Prints all contents in files.");
         System.out.println(">      -> redirects the output of the first command to be written to a file. I");
