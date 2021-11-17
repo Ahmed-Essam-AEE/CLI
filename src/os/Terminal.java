@@ -62,34 +62,42 @@ public class Terminal {
  }
 //////////////////////////////////////////
 public String echo(String [] args) {
-    return String.join(" ", args);
+   // return String.join(" ", args);
+    return ("the user enter :"+value);
 }
 ////////////////////////////////////////////
+  private File founddir;
 public String pwd() {
-    return System.getProperty("user.dir");
+  //  return System.getProperty("user.dir");
+    String current_directory;
+         
+        current_directory = System.getProperty("user.dir");//here we need curdir for project if we go any place this function will return path
+        founddir= new File(current_directory);
+        System.out.println("Current directory:" +current_directory); 
+ 
 }
 ///////////////////////////////////////////
 public void cd(String [] args){
-   ///
-   
-   ////
-   
-   
-   //
+    if(path=="..")
+          {
+            String pathOfUperFloder = founddir.getParent();
+            founddir=new File(pathOfUperFloder).getParentFile();
+            System.out.println(pathOfUperFloder);
+          }
+          else {
+           File file1=new File(path);//to get full path we create new file to get from it
+           founddir=file1.getAbsoluteFile();
+              System.out.println(founddir.getAbsolutePath());
+          }
   }
 ///////////////////////////////////////////
 public String ls(String [] args) {
-        try {
-            List<String> ls = Files.list(Paths.get(System.getProperty("user.dir")))
-                    .map(p -> p.getFileName().toString())
-                    .collect(Collectors.toList());
-            if (args.length != 0 && args[0].equals("-r"))
-                Collections.reverse(ls);
-            return String.join("\n", ls);
-        } catch (IOException e) {
-            e.printStackTrace();
+          String [] contents = founddir.list();
+        
+        for (int i = 0; i < contents.length; i++)
+        {
+            System.out.println(contents[i]);
         }
-        return null;
 }
 ////////////////////////////////////////////
 public void mkdir(String [] args) {
