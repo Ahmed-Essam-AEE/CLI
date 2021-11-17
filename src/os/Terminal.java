@@ -2,8 +2,8 @@ package os;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
-
+import java.util.Arrays;
+import java.util.Collections;
 public class Terminal {
         private File founddir;//this file will be used in this assignment
         //echo fuction is take string and print it
