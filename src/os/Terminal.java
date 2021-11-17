@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class Terminal {
  Parser parser;
 ///////////////////////////////////////////
+ Path path = Paths.get("c:\\");
  public void chooseCommandAction(String command, String [] args){
        switch(command){
         case "echo" :
