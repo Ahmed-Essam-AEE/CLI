@@ -1,13 +1,9 @@
 package command_line;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 public class Terminal {
- Parser parser;
+Parser parser;
+File currentPath = new File(System.getProperty("user.dir"));
 ///////////////////////////////////////////
  public void chooseCommandAction(String command, String [] args){
        switch(command){
@@ -18,7 +14,7 @@ public class Terminal {
             System.out.println(pwd());
             break ; 
         case "cd" :
-            //
+            cd(args);
             break ; 
         case "ls" :
             System.out.println(ls(args));
@@ -66,28 +62,66 @@ public String echo(String [] args) {
 }
 ////////////////////////////////////////////
 public String pwd() {
-    return System.getProperty("user.dir");
+       return currentPath.getAbsolutePath();
 }
+/////////////////////////////////////////////
+  public void cd(String [] args)
+  {
+      if (args.length == 0){
+           String pathofUser;
+           currentPath= new File(System.getProperty("user.home"));
+           pathofUser=(System.getProperty("user.home"));
+      }
+      else if (args.length == 1 && args[0].equals("..")){
+              currentPath = currentPath.getParentFile(); 
+      }
+      else {
+            File file1=new File(args[0]);
+            currentPath = file1.getAbsoluteFile();
+      }
+ }
 ///////////////////////////////////////////
 public String ls(String [] args) {
-        try {
-            List<String> ls = Files.list(Paths.get(System.getProperty("user.dir")))
-                    .map(p -> p.getFileName().toString())
-                    .collect(Collectors.toList());
-            if (args.length != 0 && args[0].equals("-r"))
-                Collections.reverse(ls);
-            return String.join("\n", ls);
-        } catch (IOException e) {
-            e.printStackTrace();
+        String [] contents = currentPath.list();
+        StringBuilder text = new StringBuilder();
+        if (args.length == 0){
+               for (int i = 0; i < contents.length; i++)
+               {
+                   if (i==0){
+                       text.append(contents[i]); 
+                   }
+                   else{
+                       text.append("\n"+contents[i]);   
+                   }
+               }
         }
-        return null;
+        else if (args.length == 1 && args[0].equals("-r")){
+            for (int i = contents.length-1; i>=0; i--)
+               {
+                   if (i == contents.length-1){
+                        text.append(contents[i]);
+                   }
+                   else {
+                       text.append("\n"+contents[i]);
+                   }
+               }
+        }
+    return text.toString() ; 
 }
 ////////////////////////////////////////////
 public void mkdir(String [] args) {
-        for (int i = 0; i < args.length; i++) {
-            File theDir = new File(args[i]);
+        if (args.length == 1 && args[0].charAt(1)==':' ){
+            File theDir = new File(args[0]);
             if (!theDir.exists()) {
                 theDir.mkdirs();
+            }
+        }
+        else {
+            for (int i = 0; i < args.length; i++) {
+                File theDir = new File(currentPath,args[i]);
+                if (!theDir.exists()) {
+                    theDir.mkdirs();
+                }
             }
         }
     }
@@ -96,7 +130,8 @@ public void rmdir(String [] args) {
         String dir = args[0];
         try {
             if (dir.equals("*")) {
-                File theDir = new File(System.getProperty("user.dir"));
+                File theDir = currentPath;
+               // File theDir = new File(System.getProperty("user.dir"));
                 File[] tmp = theDir.listFiles();
                 for (int i = 0; i < tmp.length; i++) {
                     File file = tmp[i];
@@ -107,7 +142,6 @@ public void rmdir(String [] args) {
                     }
                 }
             } else {
-
                 File theDir;
                 if (dir.contains(":")) {
                     theDir = new File(dir);
@@ -117,7 +151,6 @@ public void rmdir(String [] args) {
                 if (theDir.listFiles().length == 0) {
                     theDir.delete();
                 }
-
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -129,7 +162,7 @@ public void rmdir(String [] args) {
         if (args[0].contains(":")) {
             file = new File(args[0]);
         } else {
-            file = new File(System.getProperty("user.dir") + "\\" + args[0]);
+            file = new File(currentPath + "\\" + args[0]);
         }
 
         try {
@@ -149,8 +182,6 @@ public void rmdir(String [] args) {
         System.out.println("mkdir  -> make a new directory.");
         System.out.println("rmdir  -> delete a directory.");
         System.out.println("touch  -> create a file ");
-        System.out.println("cp     -> copy files from the current directory to a different directory.");
-        System.out.println("cp -r  -> copy files from the current directory to a different directory (empty or not).");
         System.out.println("rm     -> delete directories and the contents within them.");
         System.out.println("cat    -> Prints all contents in files.");
         System.out.println(">      -> redirects the output of the first command to be written to a file. I");
