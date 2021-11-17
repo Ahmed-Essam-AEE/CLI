@@ -1,79 +1,170 @@
-package os;
-
+package command_line;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 public class Terminal {
-        private File founddir;//this file will be used in this assignment
-        //echo fuction is take string and print it
-    
-        public String echo(String value)
-        {
-           return ("the user enter :"+value);
+ Parser parser;
+///////////////////////////////////////////
+ public void chooseCommandAction(String command, String [] args){
+       switch(command){
+        case "echo" :
+            System.out.println(echo(args));
+            break ; 
+        case "pwd" :
+            System.out.println(pwd());
+            break ; 
+        case "cd" :
+            cd(args);
+            break ; 
+        case "ls" :
+            System.out.println(ls(args));
+            break ;
+        case "ls -r" :
+            System.out.println(ls(args));
+            break ; 
+        case "mkdir" :
+            mkdir(args);
+            break ; 
+        case "rmdir" :
+            rmdir(args);
+            break ; 
+        case "touch" :
+            touch(args);
+            break ;
+        case "cp" :
+            //
+            break ;
+        case "cp -r" :
+            //
+            break ; 
+        case "rm" :
+            //
+            break ;
+        case "cat" :
+            //
+            break ; 
+        case ">" :
+            //
+            break ;
+        case ">>" :
+            //
+            break ; 
+        case "help" :
+            help();
+            break ; 
+        default :
+            break ; 
+    }
+ }
+//////////////////////////////////////////
+public String echo(String [] args) {
+    return String.join(" ", args);
+}
+////////////////////////////////////////////
+public String pwd() {
+    return System.getProperty("user.dir");
+}
+///////////////////////////////////////////
+public void cd(String [] args){
+   ///
+   
+   ////
+   
+   
+   //
+  }
+///////////////////////////////////////////
+public String ls(String [] args) {
+        try {
+            List<String> ls = Files.list(Paths.get(System.getProperty("user.dir")))
+                    .map(p -> p.getFileName().toString())
+                    .collect(Collectors.toList());
+            if (args.length != 0 && args[0].equals("-r"))
+                Collections.reverse(ls);
+            return String.join("\n", ls);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        //print current path
-        public void pwd() {
-        String current_directory;
-         
-        current_directory = System.getProperty("user.dir");//here we need curdir for project if we go any place this function will return path
-        founddir= new File(current_directory);
-        System.out.println("Current directory:" +current_directory); 
-         
-        
-        }
-        //lists all files in current working directory
-        public  void ls() {
-        //String currentdir=System.getProperty("user.dir");
-        //String s=founddir.getAbsolutePath();
-         
-        String [] contents = founddir.list();
-        
-        for (int i = 0; i < contents.length; i++)
-        {
-            System.out.println(contents[i]);
+        return null;
+}
+////////////////////////////////////////////
+public void mkdir(String [] args) {
+        for (int i = 0; i < args.length; i++) {
+            File theDir = new File(args[i]);
+            if (!theDir.exists()) {
+                theDir.mkdirs();
+            }
         }
     }
-         public  void ls_r() {
-            // String s=founddir.getAbsolutePath();
-       // String currentdir=System.getProperty("user.dir");
-      
-        String [] contents = founddir.list();
-        
-        //collections is funtion build in arrays and mde it as list
-        Collections.reverse(Arrays.asList(contents));//here trnsfer from last to first
-         System.out.println(Arrays.asList(contents));
+ ////////////////////////////////////////////
+public void rmdir(String [] args) {
+        String dir = args[0];
+        try {
+            if (dir.equals("*")) {
+                File theDir = new File(System.getProperty("user.dir"));
+                File[] tmp = theDir.listFiles();
+                for (int i = 0; i < tmp.length; i++) {
+                    File file = tmp[i];
+                    if (!file.isFile()) {
+                        if (file.listFiles().length == 0) {
+                            file.delete();
+                        }
+                    }
+                }
+            } else {
+
+                File theDir;
+                if (dir.contains(":")) {
+                    theDir = new File(dir);
+                } else {
+                    theDir = new File(System.getProperty("user.dir") + "\\" + dir);
+                }
+                if (theDir.listFiles().length == 0) {
+                    theDir.delete();
+                }
+
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
-         public void exit(){System.exit(0);}
-        void cd(){
-          String pathofUser;
-          founddir = new File(System.getProperty("user.home"));
-          pathofUser=(System.getProperty("user.home"));
-            System.out.println(pathofUser);
+}
+/////////////////////////////////////////////
+ public void touch(String [] args) {
+        File file;
+        if (args[0].contains(":")) {
+            file = new File(args[0]);
+        } else {
+            file = new File(System.getProperty("user.dir") + "\\" + args[0]);
         }
-        public void cd(String path)
-        {
-          if(path=="..")
-          {
-            String pathOfUperFloder = founddir.getParent();
-            founddir=new File(pathOfUperFloder).getParentFile();
-            System.out.println(pathOfUperFloder);
-          }
-          else {
-           File file1=new File(path);//to get full path we create new file to get from it
-           founddir=file1.getAbsoluteFile();
-              System.out.println(founddir.getAbsolutePath());
-          }
-	       
+
+        try {
+            if (!new File(args[0]).exists())
+                file.createNewFile();
+        } catch (IOException e) {
+            System.out.println(e);
         }
-        public static void main(String[] args) {
-        Terminal t=new Terminal();
-        System.out.println(t.echo("alaa"));
-        t.pwd();
-        t.ls();
-        t.ls_r();
-        t.cd();
-        t.cd("C:\\Users\\LENOVO\\Documents\\NetBeansProjects");
-        
     }
+/////////////////////////////////////////////
+ public void help(){
+        System.out.println("echo   -> takes 1 argument and prints it..");
+        System.out.println("pwd    -> return an absolute (full) path.");
+        System.out.println("cd     -> change the directory.");
+        System.out.println("ls     -> lists the contents of the current directory sorted alphabetically");
+        System.out.println("ls -r  -> lists the contents of the current directory in reverse order.");
+        System.out.println("mkdir  -> make a new directory.");
+        System.out.println("rmdir  -> delete a directory.");
+        System.out.println("touch  -> create a file ");
+        System.out.println("cp     -> copy files from the current directory to a different directory.");
+        System.out.println("cp -r  -> copy files from the current directory to a different directory (empty or not).");
+        System.out.println("rm     -> delete directories and the contents within them.");
+        System.out.println("cat    -> Prints all contents in files.");
+        System.out.println(">      -> redirects the output of the first command to be written to a file. I");
+        System.out.println(">>     -> like > but appends to the file if it exists        ");
+        System.out.println("help   -> display all command to help you.");
+        System.out.println("exit   -> stop program.");
+} 
 }
